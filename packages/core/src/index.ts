@@ -1,35 +1,40 @@
-export const mockCore = (): string => "core setup works";
-
-type NavEntry = {
+export type NavEntry = {
     path: string
     title?: string
-    index?: number
     isHidden?: boolean
-    component?: React.ComponentType
+    component?: unknown
 }
 
-type NavState = {
-    entries: NavEntry[]
+export type NavNode = {
+    entry: NavEntry
+    children: NavEntry[]
 }
 
 type Listener = () => void
 
 export class EaseNav {
-    private state: NavState = {entries: []}
+    private entries: NavEntry[] = []
     private listeners: Set<Listener> = new Set()
     private cachedVisible: NavEntry[] = []
     private cachedAll: NavEntry[] = []
+    private cachedTree: NavNode[] = []
 
     register(entry: NavEntry): EaseNav {
-        console.debug(`Registering ${entry.path}`)
-        entry.index = entry.index ?? this.state.entries.length
-        entry.title = entry.title ?? entry.component?.name ?? String(entry.path.replaceAll("/", " "))
-        if (this.state.entries.find(e => e.path === entry.path)) {
-            console.warn(`NavEntry already registered: ${entry.path}, overwriting`)
-            this.state.entries = this.state.entries.filter(e => e.path !== entry.path) // remove existing entry
+        entry.title = entry.title ?? this.titleFromPath(entry.path)
+        const existingIdx = this.entries.findIndex(e => e.path === entry.path)
+        if (existingIdx !== -1) {
+            this.entries[existingIdx] = entry
+        } else {
+            this.entries.push(entry)
         }
-        this.state.entries.push(entry)
         this.updateSnapshots()
+        return this
+    }
+
+    unregister(path: string): EaseNav {
+        this.entries = this.entries.filter(e => e.path !== path)
+        this.updateSnapshots()
+        this.notify()
         return this
     }
 
@@ -38,20 +43,8 @@ export class EaseNav {
         return () => { this.listeners.delete(listener) }
     }
 
-    private updateSnapshots() {
-        this.cachedVisible = this.state.entries
-            .filter(entry => entry.isHidden !== true)
-            .filter(entry => entry.path !== "*")
-        this.cachedAll = [...this.state.entries]
-    }
-
-    private notify() {
-        this.updateSnapshots()
-        for (const listener of this.listeners) listener()
-    }
-
     toggleHidden(path: string): void {
-        const entry = this.state.entries.find(e => e.path === path)
+        const entry = this.entries.find(e => e.path === path)
         if (entry) {
             entry.isHidden = !entry.isHidden
             this.notify()
@@ -59,17 +52,19 @@ export class EaseNav {
     }
 
     move(path: string, direction: "up" | "down"): void {
-        const idx = this.state.entries.findIndex(e => e.path === path)
+        const idx = this.entries.findIndex(e => e.path === path)
         if (idx === -1) return
         const swapIdx = direction === "up" ? idx - 1 : idx + 1
-        if (swapIdx < 0 || swapIdx >= this.state.entries.length) return
-        const entries = this.state.entries;
-        [entries[idx], entries[swapIdx]] = [entries[swapIdx], entries[idx]]
+        const a = this.entries[idx]
+        const b = this.entries[swapIdx]
+        if (!a || !b) return
+        this.entries[idx] = b
+        this.entries[swapIdx] = a
         this.notify()
     }
 
     getByPath(path: string): NavEntry | undefined {
-        return this.state.entries.find(entry => entry.path === path)
+        return this.entries.find(entry => entry.path === path)
     }
 
     getEntries = (): NavEntry[] => {
@@ -80,7 +75,55 @@ export class EaseNav {
         return this.cachedAll
     }
 
-    _debugState(): NavState {
-        return this.state
+    getTree = (): NavNode[] => {
+        return this.cachedTree
+    }
+
+    get size(): number {
+        return this.entries.length
+    }
+
+    private updateSnapshots() {
+        this.cachedVisible = this.entries
+            .filter(entry => entry.isHidden !== true)
+            .filter(entry => entry.path !== "*")
+        this.cachedAll = [...this.entries]
+        this.cachedTree = this.buildTree(this.cachedVisible)
+    }
+
+    private buildTree(entries: NavEntry[]): NavNode[] {
+        const topLevel: NavNode[] = []
+        const childMap = new Map<string, NavEntry[]>()
+
+        for (const entry of entries) {
+            const segments = entry.path.replace(/^\//, "").split("/")
+            if (segments.length <= 1) {
+                topLevel.push({ entry, children: [] })
+            } else {
+                const parentPath = `/${segments[0]}`
+                const list = childMap.get(parentPath) ?? []
+                list.push(entry)
+                childMap.set(parentPath, list)
+            }
+        }
+
+        for (const node of topLevel) {
+            node.children = childMap.get(node.entry.path) ?? []
+        }
+
+        return topLevel
+    }
+
+    private notify() {
+        this.updateSnapshots()
+        for (const listener of this.listeners) listener()
+    }
+
+    private titleFromPath(path: string): string {
+        if (path === "/") return "Home"
+        const segment = path.replace(/^\//, "").split("/").pop() ?? path
+        return segment
+            .replace(/[-_]/g, " ")
+            .replace(/\b\w/g, c => c.toUpperCase())
     }
 }

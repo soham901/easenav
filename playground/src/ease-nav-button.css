@@ -97,3 +97,15 @@
 	accent-color: #fbf0df;
 	cursor: pointer;
 }
+
+.easenav-item-path {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.3;
+}
+
+.easenav-item-hint {
+	font-size: 0.75em;
+	color: rgba(251, 240, 223, 0.35);
+	font-family: monospace;
+}

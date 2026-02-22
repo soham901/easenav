@@ -4,7 +4,13 @@ import "./ease-nav-button.css";
 
 export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 	const [open, setOpen] = useState(false);
-	const entries = useSyncExternalStore(easeNav.subscribe, easeNav.getAllEntries);
+	const allEntries = useSyncExternalStore(easeNav.subscribe, easeNav.getAllEntries);
+	const entries = allEntries.filter(e => e.path !== "*");
+
+	const getDepth = (path: string) => {
+		if (path === "/") return 0;
+		return path.replace(/\/$/, "").split("/").length - 1;
+	};
 
 	return (
 		<div className="easenav-customize">
@@ -18,6 +24,7 @@ export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 						<div
 							key={entry.path}
 							className={`easenav-item${entry.isHidden ? " easenav-item--hidden" : ""}`}
+							style={{ paddingLeft: `${getDepth(entry.path) * 1.2}rem` }}
 						>
 							<div className="easenav-item-arrows">
 								<button
@@ -39,7 +46,12 @@ export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 									checked={!entry.isHidden}
 									onChange={() => easeNav.toggleHidden(entry.path)}
 								/>
-								<span>{entry.title || entry.path}</span>
+								<span className="easenav-item-path">
+									{entry.title || entry.path}
+									{getDepth(entry.path) > 0 && (
+										<span className="easenav-item-hint">{entry.path}</span>
+									)}
+								</span>
 							</label>
 						</div>
 					))}
