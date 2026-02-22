@@ -2,7 +2,8 @@
   "name": "ease-nav",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "playground/*"
   ],
   "scripts": {
     "dev": "bun run -F '*' dev",
