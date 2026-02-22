@@ -63,7 +63,7 @@ describe("EaseNav", () => {
 		expect(nav.getEntries()).toHaveLength(2);
 	});
 
-	it("moves entries up and down", () => {
+	it("moves root-level entries up and down", () => {
 		const nav = new EaseNav();
 		nav.register({ path: "/" });
 		nav.register({ path: "/about" });
@@ -86,6 +86,26 @@ describe("EaseNav", () => {
 
 		nav.move("/about", "down");
 		expect(nav.getEntries().map(e => e.path)).toEqual(["/", "/about"]);
+	});
+
+	it("only moves within siblings of the same parent", () => {
+		const nav = new EaseNav();
+		nav.register({ path: "/" });
+		nav.register({ path: "/users" });
+		nav.register({ path: "/users/active" });
+		nav.register({ path: "/users/inactive" });
+		nav.register({ path: "/about" });
+
+		expect(nav.canMove("/users/active", "up")).toBe(false);
+		expect(nav.canMove("/users/active", "down")).toBe(true);
+		expect(nav.canMove("/users/inactive", "down")).toBe(false);
+		expect(nav.canMove("/users/inactive", "up")).toBe(true);
+
+		nav.move("/users/active", "up");
+		expect(nav.getAllEntries().map(e => e.path)).toEqual(["/", "/users", "/users/active", "/users/inactive", "/about"]);
+
+		nav.move("/users/inactive", "up");
+		expect(nav.getAllEntries().map(e => e.path)).toEqual(["/", "/users", "/users/inactive", "/users/active", "/about"]);
 	});
 
 	it("excludes catch-all from getEntries", () => {
@@ -136,6 +156,43 @@ describe("EaseNav", () => {
 		nav.toggleHidden("/users/active");
 		const tree = nav.getTree();
 		expect(tree[1]?.children).toHaveLength(0);
+	});
+
+	it("hiding a parent cascades to children", () => {
+		const nav = new EaseNav();
+		nav.register({ path: "/" });
+		nav.register({ path: "/users" });
+		nav.register({ path: "/users/active" });
+		nav.register({ path: "/users/inactive" });
+
+		nav.toggleHidden("/users");
+		expect(nav.getByPath("/users")?.isHidden).toBe(true);
+		expect(nav.getByPath("/users/active")?.isHidden).toBe(true);
+		expect(nav.getByPath("/users/inactive")?.isHidden).toBe(true);
+		expect(nav.getEntries()).toHaveLength(1);
+
+		nav.toggleHidden("/users");
+		expect(nav.getByPath("/users/active")?.isHidden).toBe(false);
+		expect(nav.getEntries()).toHaveLength(4);
+	});
+
+	it("moving a parent moves its entire subtree", () => {
+		const nav = new EaseNav();
+		nav.register({ path: "/" });
+		nav.register({ path: "/users" });
+		nav.register({ path: "/users/active" });
+		nav.register({ path: "/users/inactive" });
+		nav.register({ path: "/about" });
+
+		nav.move("/users", "down");
+		expect(nav.getAllEntries().map(e => e.path)).toEqual([
+			"/", "/about", "/users", "/users/active", "/users/inactive",
+		]);
+
+		nav.move("/users", "up");
+		expect(nav.getAllEntries().map(e => e.path)).toEqual([
+			"/", "/users", "/users/active", "/users/inactive", "/about",
+		]);
 	});
 
 	it("notifies subscribers on changes", () => {

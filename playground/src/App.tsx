@@ -7,13 +7,7 @@ import { EaseNavButton } from "./ease-nav-button";
 
 const Home = () => <h1>Home Page</h1>;
 const About = () => <h1>About Page</h1>;
-const Users = () => (
-	<div>
-		<h1>Users Page</h1>
-		<Link to="/users/active">Active Users</Link>
-		<Link to="/users/inactive">Inactive Users</Link>
-	</div>
-);
+const Users = () => <h1>Users Page</h1>;
 const ActiveUsersList = () => (
 	<div>
 		<h1>Active Users List</h1>

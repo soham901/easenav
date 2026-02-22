@@ -45,21 +45,54 @@ export class EaseNav {
 
     toggleHidden(path: string): void {
         const entry = this.entries.find(e => e.path === path)
-        if (entry) {
-            entry.isHidden = !entry.isHidden
-            this.notify()
+        if (!entry) return
+        entry.isHidden = !entry.isHidden
+        for (const child of this.getChildren(path)) {
+            child.isHidden = entry.isHidden
         }
+        this.notify()
+    }
+
+    isEffectivelyHidden(path: string): boolean {
+        const entry = this.entries.find(e => e.path === path)
+        if (!entry) return false
+        if (entry.isHidden) return true
+        const parent = this.parentPath(path)
+        if (parent && parent !== "") {
+            return this.isEffectivelyHidden(parent)
+        }
+        return false
+    }
+
+    canMove(path: string, direction: "up" | "down"): boolean {
+        const parent = this.parentPath(path)
+        const siblings = this.topLevelSiblings(parent)
+        const sibIdx = siblings.findIndex(e => e.path === path)
+        if (sibIdx === -1) return false
+        return direction === "up" ? sibIdx > 0 : sibIdx < siblings.length - 1
     }
 
     move(path: string, direction: "up" | "down"): void {
-        const idx = this.entries.findIndex(e => e.path === path)
-        if (idx === -1) return
-        const swapIdx = direction === "up" ? idx - 1 : idx + 1
-        const a = this.entries[idx]
-        const b = this.entries[swapIdx]
-        if (!a || !b) return
-        this.entries[idx] = b
-        this.entries[swapIdx] = a
+        if (!this.canMove(path, direction)) return
+        const parent = this.parentPath(path)
+        const siblings = this.topLevelSiblings(parent)
+        const sibIdx = siblings.findIndex(e => e.path === path)
+        const swapEntry = siblings[direction === "up" ? sibIdx - 1 : sibIdx + 1]
+        if (!swapEntry) return
+
+        const blockA = this.getBlock(path)
+        const blockB = this.getBlock(swapEntry.path)
+
+        const startA = this.entries.findIndex(e => e.path === blockA[0]?.path)
+        const startB = this.entries.findIndex(e => e.path === blockB[0]?.path)
+        if (startA === -1 || startB === -1) return
+
+        const minStart = Math.min(startA, startB)
+        const combined = direction === "up"
+            ? [...blockA, ...blockB]
+            : [...blockB, ...blockA]
+
+        this.entries.splice(minStart, blockA.length + blockB.length, ...combined)
         this.notify()
     }
 
@@ -83,9 +116,24 @@ export class EaseNav {
         return this.entries.length
     }
 
+    private getChildren(path: string): NavEntry[] {
+        if (path === "/" || path === "*") return []
+        const prefix = `${path}/`
+        return this.entries.filter(e => e.path.startsWith(prefix))
+    }
+
+    private getBlock(path: string): NavEntry[] {
+        return [this.entries.find(e => e.path === path), ...this.getChildren(path)]
+            .filter((e): e is NavEntry => e != null)
+    }
+
+    private topLevelSiblings(parent: string): NavEntry[] {
+        return this.entries.filter(e => this.parentPath(e.path) === parent)
+    }
+
     private updateSnapshots() {
         this.cachedVisible = this.entries
-            .filter(entry => entry.isHidden !== true)
+            .filter(entry => !this.isEffectivelyHidden(entry.path))
             .filter(entry => entry.path !== "*")
         this.cachedAll = [...this.entries]
         this.cachedTree = this.buildTree(this.cachedVisible)
@@ -117,6 +165,14 @@ export class EaseNav {
     private notify() {
         this.updateSnapshots()
         for (const listener of this.listeners) listener()
+    }
+
+    private parentPath(path: string): string {
+        if (path === "/") return ""
+        const parts = path.replace(/\/$/, "").split("/")
+        parts.pop()
+        const parent = parts.join("/")
+        return parent === "" || parent === "/" ? "" : parent
     }
 
     private titleFromPath(path: string): string {

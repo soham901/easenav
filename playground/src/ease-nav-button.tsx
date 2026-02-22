@@ -9,7 +9,8 @@ export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 
 	const getDepth = (path: string) => {
 		if (path === "/") return 0;
-		return path.replace(/\/$/, "").split("/").length - 1;
+		const segments = path.replace(/^\//, "").split("/");
+		return segments.length - 1;
 	};
 
 	return (
@@ -30,13 +31,13 @@ export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 								<button
 									type="button"
 									className="easenav-arrow"
-									disabled={i === 0}
+									disabled={!easeNav.canMove(entry.path, "up")}
 									onClick={() => easeNav.move(entry.path, "up")}
 								>↑</button>
 								<button
 									type="button"
 									className="easenav-arrow"
-									disabled={i === entries.length - 1}
+									disabled={!easeNav.canMove(entry.path, "down")}
 									onClick={() => easeNav.move(entry.path, "down")}
 								>↓</button>
 							</div>
