@@ -9,6 +9,8 @@ import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { App } from "./App";
 
+import { BrowserRouter } from "react-router-dom";
+
 const elem = document.getElementById("root");
 if (!elem) {
 	throw new Error("Root element not found");
@@ -16,7 +18,9 @@ if (!elem) {
 
 const app = (
 	<StrictMode>
-		<App />
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
 	</StrictMode>
 );
 
