@@ -1,0 +1,21 @@
+{
+  "name": "ease-nav",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run -F '*' dev",
+    "build": "bun run -F '*' build",
+    "test": "bun run -F '*' test",
+    "typecheck": "bun run -F '*' typecheck",
+    "lint": "bunx biome lint .",
+    "ci": "bun run lint && bun run typecheck && bun run test && bun run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
+  }
+}
