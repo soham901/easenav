@@ -1,12 +1,8 @@
 import "./index.css";
-import { mockCore } from "@easenav/core"
+import { mockCore } from "@easenav/core";
 
 export function App() {
-  return (
-    <div className="app">
-      {mockCore()}
-    </div>
-  );
+	return <div className="app">{mockCore()}</div>;
 }
 
 export default App;
