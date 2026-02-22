@@ -38,7 +38,7 @@ function Header() {
 	const tree = useSyncExternalStore(easeNav.subscribe, easeNav.getTree);
 	return (
 		<header className="nav-header">
-			<h2>EaseNav Playground</h2>
+			<h2>Playground</h2>
 			<nav className="nav-bar">
 				{tree.map(({ entry, children }) =>
 					children.length > 0 ? (
