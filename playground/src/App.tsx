@@ -48,7 +48,7 @@ const GitHub = () => {
 	useEffect(() => {
 		window.open("https://github.com/soham901/easenav", "_blank", "noopener,noreferrer");
 		navigate(-1);
-	}, []);
+	}, [navigate]);
 	return null;
 };
 const NotFound = () => <h1>Not Found</h1>;
