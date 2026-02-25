@@ -1,21 +1,26 @@
-# Ease Navigation (Demo)[https://nav.easelabs.in]
+Ease Navigation (Demo)
+
+https://nav.easelabs.in
 
 Plug into your app and let users personalize navigation.
 
-## What It Is
-Ease Navigation is a headless navigation customization package.
+What It Is
 
-It plugs into existing apps and lets users control how navigation behaves, including:
-- hiding items
-- reordering items
-- saving personal navigation preferences
+Ease Navigation is a headless navigation customization package. It integrates into existing applications and allows users to control how navigation behaves, including:
 
-## Scope
-- User-driven navigation preferences
+- Hiding navigation items
+- Reordering navigation items
+- Saving personal navigation preferences
+
+Scope
+
+- User driven navigation preferences
 - Persistent navigation state
-- Headless architecture (no UI included)
+- Headless architecture with no UI included
 
-## Non-Goals
+Non Goals
+
 - No sidebar or layout components
-- No route generation or router replacement
+- No route generation
+- No router replacement
 - No visual builder
