@@ -1,4 +1,4 @@
-# Ease Navigation
+# Ease Navigation (Demo)[https://nav.easelabs.in]
 
 Plug into your app and let users personalize navigation.
 
