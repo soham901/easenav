@@ -70,10 +70,18 @@ describe("EaseNav", () => {
 		nav.register({ path: "/users" });
 
 		nav.move("/users", "up");
-		expect(nav.getEntries().map(e => e.path)).toEqual(["/", "/users", "/about"]);
+		expect(nav.getEntries().map((e) => e.path)).toEqual([
+			"/",
+			"/users",
+			"/about",
+		]);
 
 		nav.move("/", "down");
-		expect(nav.getEntries().map(e => e.path)).toEqual(["/users", "/", "/about"]);
+		expect(nav.getEntries().map((e) => e.path)).toEqual([
+			"/users",
+			"/",
+			"/about",
+		]);
 	});
 
 	it("ignores move at boundaries", () => {
@@ -82,10 +90,10 @@ describe("EaseNav", () => {
 		nav.register({ path: "/about" });
 
 		nav.move("/", "up");
-		expect(nav.getEntries().map(e => e.path)).toEqual(["/", "/about"]);
+		expect(nav.getEntries().map((e) => e.path)).toEqual(["/", "/about"]);
 
 		nav.move("/about", "down");
-		expect(nav.getEntries().map(e => e.path)).toEqual(["/", "/about"]);
+		expect(nav.getEntries().map((e) => e.path)).toEqual(["/", "/about"]);
 	});
 
 	it("only moves within siblings of the same parent", () => {
@@ -102,10 +110,22 @@ describe("EaseNav", () => {
 		expect(nav.canMove("/users/inactive", "up")).toBe(true);
 
 		nav.move("/users/active", "up");
-		expect(nav.getAllEntries().map(e => e.path)).toEqual(["/", "/users", "/users/active", "/users/inactive", "/about"]);
+		expect(nav.getAllEntries().map((e) => e.path)).toEqual([
+			"/",
+			"/users",
+			"/users/active",
+			"/users/inactive",
+			"/about",
+		]);
 
 		nav.move("/users/inactive", "up");
-		expect(nav.getAllEntries().map(e => e.path)).toEqual(["/", "/users", "/users/inactive", "/users/active", "/about"]);
+		expect(nav.getAllEntries().map((e) => e.path)).toEqual([
+			"/",
+			"/users",
+			"/users/inactive",
+			"/users/active",
+			"/about",
+		]);
 	});
 
 	it("excludes catch-all from getEntries", () => {
@@ -141,7 +161,10 @@ describe("EaseNav", () => {
 
 		expect(tree[1]?.entry.path).toBe("/users");
 		expect(tree[1]?.children).toHaveLength(2);
-		expect(tree[1]?.children.map(c => c.path)).toEqual(["/users/active", "/users/inactive"]);
+		expect(tree[1]?.children.map((c) => c.path)).toEqual([
+			"/users/active",
+			"/users/inactive",
+		]);
 
 		expect(tree[2]?.entry.path).toBe("/about");
 		expect(tree[2]?.children).toHaveLength(0);
@@ -185,13 +208,21 @@ describe("EaseNav", () => {
 		nav.register({ path: "/about" });
 
 		nav.move("/users", "down");
-		expect(nav.getAllEntries().map(e => e.path)).toEqual([
-			"/", "/about", "/users", "/users/active", "/users/inactive",
+		expect(nav.getAllEntries().map((e) => e.path)).toEqual([
+			"/",
+			"/about",
+			"/users",
+			"/users/active",
+			"/users/inactive",
 		]);
 
 		nav.move("/users", "up");
-		expect(nav.getAllEntries().map(e => e.path)).toEqual([
-			"/", "/users", "/users/active", "/users/inactive", "/about",
+		expect(nav.getAllEntries().map((e) => e.path)).toEqual([
+			"/",
+			"/users",
+			"/users/active",
+			"/users/inactive",
+			"/about",
 		]);
 	});
 

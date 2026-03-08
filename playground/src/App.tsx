@@ -46,7 +46,11 @@ const InactiveUsersList = () => (
 const GitHub = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
-		window.open("https://github.com/soham901/easenav", "_blank", "noopener,noreferrer");
+		window.open(
+			"https://github.com/soham901/easenav",
+			"_blank",
+			"noopener,noreferrer",
+		);
 		navigate(-1);
 	}, [navigate]);
 	return null;
@@ -75,18 +79,26 @@ function Header() {
 				{tree.map(({ entry, children }) =>
 					children.length > 0 ? (
 						<div key={entry.path} className="nav-dropdown">
-							<Link to={entry.path} className="nav-link">{entry.title}</Link>
+							<Link to={entry.path} className="nav-link">
+								{entry.title}
+							</Link>
 							<div className="nav-dropdown-menu">
-								{children.map(child => (
-									<Link key={child.path} to={child.path} className="nav-dropdown-item">
+								{children.map((child) => (
+									<Link
+										key={child.path}
+										to={child.path}
+										className="nav-dropdown-item"
+									>
 										{child.title}
 									</Link>
 								))}
 							</div>
 						</div>
 					) : (
-						<Link key={entry.path} to={entry.path} className="nav-link">{entry.title}</Link>
-					)
+						<Link key={entry.path} to={entry.path} className="nav-link">
+							{entry.title}
+						</Link>
+					),
 				)}
 			</nav>
 		</header>
@@ -97,8 +109,12 @@ function AppRoutes() {
 	const entries = useVisibleEntries();
 	return (
 		<Routes>
-			{entries.map(entry => (
-				<Route key={entry.path} path={entry.path} Component={entry.component as React.ComponentType} />
+			{entries.map((entry) => (
+				<Route
+					key={entry.path}
+					path={entry.path}
+					Component={entry.component as React.ComponentType}
+				/>
 			))}
 			<Route path="*" Component={NotFound} />
 		</Routes>

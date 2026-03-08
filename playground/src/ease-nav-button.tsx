@@ -4,8 +4,11 @@ import "./ease-nav-button.css";
 
 export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 	const [open, setOpen] = useState(false);
-	const allEntries = useSyncExternalStore(easeNav.subscribe, easeNav.getAllEntries);
-	const entries = allEntries.filter(e => e.path !== "*");
+	const allEntries = useSyncExternalStore(
+		easeNav.subscribe,
+		easeNav.getAllEntries,
+	);
+	const entries = allEntries.filter((e) => e.path !== "*");
 
 	const getDepth = (path: string) => {
 		if (path === "/") return 0;
@@ -15,7 +18,11 @@ export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 
 	return (
 		<div className="easenav-customize">
-			<button type="button" className="easenav-toggle" onClick={() => setOpen(!open)}>
+			<button
+				type="button"
+				className="easenav-toggle"
+				onClick={() => setOpen(!open)}
+			>
 				⚙ Customize
 			</button>
 			{open && (
@@ -33,13 +40,17 @@ export const EaseNavButton = ({ easeNav }: { easeNav: EaseNav }) => {
 									className="easenav-arrow"
 									disabled={!easeNav.canMove(entry.path, "up")}
 									onClick={() => easeNav.move(entry.path, "up")}
-								>↑</button>
+								>
+									↑
+								</button>
 								<button
 									type="button"
 									className="easenav-arrow"
 									disabled={!easeNav.canMove(entry.path, "down")}
 									onClick={() => easeNav.move(entry.path, "down")}
-								>↓</button>
+								>
+									↓
+								</button>
 							</div>
 							<label className="easenav-item-label">
 								<input
