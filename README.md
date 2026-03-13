@@ -23,4 +23,3 @@ https://nav.easelabs.in (demo)
 - No sidebar or layout components
 - No route generation
 - No router replacement
-- No visual builder
