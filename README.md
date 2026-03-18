@@ -21,5 +21,4 @@ https://nav.easelabs.in (demo)
 ### Non Goals
 
 - No sidebar or layout components
-- No route generation
 - No router replacement
