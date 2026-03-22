@@ -17,6 +17,7 @@ https://nav.easelabs.in (demo)
 - User driven navigation preferences
 - Persistent navigation state
 - Headless architecture with no UI included
+- Minimal devtool
 
 ### Non Goals
 
