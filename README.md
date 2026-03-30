@@ -2,7 +2,7 @@
 
 https://nav.easelabs.in (demo)
 
-- Plug into your app and let users personalize navigation.
+- Plug into your app and let users personalize navigation (locally sync)
 
 ### What It Is
 
